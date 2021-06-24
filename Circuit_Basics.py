@@ -1,6 +1,7 @@
 import numpy as np
+import time
 from qiskit import QuantumCircuit
-from qiskit.quantum_info import Statevector
+from qiskit.quantum_info import Statevector, Operator
 
 def basic_circuit():
     #creation of a quantum circuit acting on a quantum register of three qubits
@@ -29,11 +30,42 @@ def simulating_circuits(circ):
     #evolve the state by the quantum circuit
     state = state.evolve(circ)
 
+    #state.draw('latex')
+
+    print(state)
+    state.draw('qsphere')
+    state.draw('hinton')
+
+def unitary_rep(circ):
+    Un = Operator(circ)
+
+    print(Un.data)
+
+def QASM(circ):
+    # Create a Quantum Circuit
+    meas = QuantumCircuit(3, 3)
+    meas.barrier(range(3))
+    # map the quantum measurement to the classical bits
+    meas.measure(range(3), range(3))
+
+    # The Qiskit circuit object supports composition.
+    # Here the meas has to be first and front=True (putting it before)
+    # as compose must put a smaller circuit into a larger one.
+    qc = meas.compose(circ, range(3), front=True)
+
+    #drawing the circuit
+    #qc.draw('mpl')
+    print(qc)
+
 
 def main():
     circ = basic_circuit()
-    sleep(1)
+    time.sleep(1)
     simulating_circuits(circ)
+    time.sleep(1)
+    unitary_rep(circ)
+    time.sleep(1)
+    QASM(circ)
 
 if __name__ == "__main__":
     main()
